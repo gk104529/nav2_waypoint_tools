@@ -19,11 +19,21 @@ find_package(rviz_default_plugins REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(tf2 REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(yaml-cpp REQUIRED)
 #set(CMAKE_AUTOMOC ON)
+find_package(rosidl_default_generators REQUIRED)
 
 include_directories(
   include
 )
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/LoadRegisteredPath.srv"
+  "srv/SaveRegisteredPathsToFile.srv"
+  "srv/LoadRegisteredPathsFromFile.srv"
+)
+rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+
 
 add_library(nav2_waypoint_goal_tool SHARED
   src/waypoint_goal_tool.cpp
@@ -45,7 +55,10 @@ add_library(nav2_waypoint_control_panel SHARED
   src/waypoint_control_panel.cpp
 )
 
-target_link_libraries(nav2_waypoint_control_panel Qt5::Widgets)
+target_link_libraries(nav2_waypoint_control_panel
+  Qt5::Widgets
+  ${cpp_typesupport_target}
+)
 
 ament_target_dependencies(nav2_waypoint_control_panel
   rclcpp
@@ -69,8 +82,35 @@ ament_target_dependencies(pose_collector_node
   visualization_msgs
   nav_msgs
 )
+target_link_libraries(pose_collector_node
+  yaml-cpp
+  ${cpp_typesupport_target}
+)
+
+add_executable(smooth_path_planner_node src/smooth_path_planner_node.cpp)
+
+ament_target_dependencies(smooth_path_planner_node
+  rclcpp
+  rclcpp_action
+  nav2_msgs
+  nav_msgs
+  geometry_msgs
+  tf2
+  tf2_geometry_msgs
+)
+
+install(TARGETS
+  smooth_path_planner_node
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 pluginlib_export_plugin_description_file(rviz_common plugin_description.xml)
+ament_export_dependencies(rosidl_default_runtime)
 
 install(
   TARGETS
