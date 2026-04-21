@@ -1,0 +1,21 @@
+<library path="nav2_waypoint_goal_tool">
+  <class
+    name="nav2_waypoint_tools/WaypointGoalTool"
+    type="nav2_waypoint_tools::WaypointGoalTool"
+    base_class_type="rviz_common::Tool">
+    <description>
+      Publish PoseStamped waypoints to /waypoint_goal_pose from an RViz toolbar tool.
+    </description>
+  </class>
+</library>
+
+<library path="nav2_waypoint_control_panel">
+  <class
+    name="nav2_waypoint_tools/WaypointControlPanel"
+    type="nav2_waypoint_tools::WaypointControlPanel"
+    base_class_type="rviz_common::Panel">
+    <description>
+      RViz panel with Send, Undo, Clear buttons and waypoint summary.
+    </description>
+  </class>
+</library>
