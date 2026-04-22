@@ -129,4 +129,14 @@ def generate_launch_description():
                 ('/plan', '/teaching_playback/path')
             ]
         ),
+        Node(
+            package='nav2_waypoint_tools',
+            executable='path_to_pose_array_node',
+            name='path_to_pose_array_node',
+            output='screen',
+            remappings=[
+                ('/path', '/teaching_playback/path'),
+                ('/path_pose_array', '/teaching_playback/path_pose_array'),
+            ]
+        ),
     ])

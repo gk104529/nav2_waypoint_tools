@@ -89,6 +89,16 @@ target_link_libraries(pose_collector_node
 
 add_executable(smooth_path_planner_node src/smooth_path_planner_node.cpp)
 
+add_executable(path_to_pose_array_node
+  src/path_to_pose_array_node.cpp
+)
+
+ament_target_dependencies(path_to_pose_array_node
+  rclcpp
+  nav_msgs
+  geometry_msgs
+)
+
 ament_target_dependencies(smooth_path_planner_node
   rclcpp
   rclcpp_action
@@ -101,6 +111,12 @@ ament_target_dependencies(smooth_path_planner_node
 
 install(TARGETS
   smooth_path_planner_node
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS
+  smooth_path_planner_node
+  path_to_pose_array_node
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

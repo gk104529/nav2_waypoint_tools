@@ -145,24 +145,9 @@ private:
       h01 * p1.pose.position.y +
       h11 * m1.y;
 
-    const double dh00 =  6.0 * s2 - 6.0 * s;
-    const double dh10 =  3.0 * s2 - 4.0 * s + 1.0;
-    const double dh01 = -6.0 * s2 + 6.0 * s;
-    const double dh11 =  3.0 * s2 - 2.0 * s;
-
-    const double dx =
-      dh00 * p0.pose.position.x +
-      dh10 * m0.x +
-      dh01 * p1.pose.position.x +
-      dh11 * m1.x;
-
-    const double dy =
-      dh00 * p0.pose.position.y +
-      dh10 * m0.y +
-      dh01 * p1.pose.position.y +
-      dh11 * m1.y;
-
-    const double yaw = std::atan2(dy, dx);
+    const double yaw0 = yawFromQuaternion(p0.pose.orientation);
+    const double yaw1 = yawFromQuaternion(p1.pose.orientation);
+    const double yaw = interpolateYawShortest(yaw0, yaw1, s);
 
     geometry_msgs::msg::PoseStamped out;
     out.header.frame_id = frame_id;
@@ -237,6 +222,19 @@ private:
       std::bind(&SmoothPathPlannerNode::execute, this, std::placeholders::_1),
       goal_handle
     }.detach();
+  }
+
+  static double normalizeAngle(double angle)
+  {
+    while (angle > M_PI) angle -= 2.0 * M_PI;
+    while (angle < -M_PI) angle += 2.0 * M_PI;
+    return angle;
+  }
+
+  static double interpolateYawShortest(double yaw0, double yaw1, double s)
+  {
+    const double dyaw = normalizeAngle(yaw1 - yaw0);
+    return normalizeAngle(yaw0 + s * dyaw);
   }
 
   void execute(const std::shared_ptr<GoalHandle> goal_handle)
